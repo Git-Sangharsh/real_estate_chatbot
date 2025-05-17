@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import uploadSvg from "../../assets/upload.svg";
 import prompts from "../propmts/prompts";
 import { marked } from "marked";
+import { MoonLoader } from "react-spinners";
 
 ChartJS.register(
   CategoryScale,
@@ -34,7 +35,8 @@ const QueryChat = () => {
   const [query, setQuery] = useState("");
   const [randomPrompt, setRandomPrompt] = useState("");
   const [history, setHistory] = useState([]);
-  const inputRef =  useRef(null);
+  const inputRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * prompts.length);
     setRandomPrompt(prompts[randomIndex]);
@@ -42,11 +44,14 @@ const QueryChat = () => {
 
   const handleQuery = async () => {
     if (!query.trim()) return;
-
+    setIsLoading(true);
     try {
-      const response = await axios.post("https://real-estate-chatbot-server-str3.onrender.com/api/query/", {
-        query,
-      });
+      const response = await axios.post(
+        "https://real-estate-chatbot-server-str3.onrender.com/api/query/",
+        {
+          query,
+        }
+      );
 
       const data = response.data;
       console.log(data);
@@ -126,6 +131,8 @@ const QueryChat = () => {
     } catch (error) {
       console.error("Axios error:", error);
       alert("Error fetching data.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -169,7 +176,6 @@ const QueryChat = () => {
           onClick={() => {
             setQuery(randomPrompt);
             inputRef.current?.focus();
-
           }}
         >
           <h1>Ask: "{randomPrompt}"</h1>
@@ -188,13 +194,19 @@ const QueryChat = () => {
           placeholder="Ask about real estate..."
           className="query-input"
         />
-        <img
-          src={uploadSvg}
-          alt="submit"
-          className="upload-svg"
-          style={{ width: "30px", height: "30px", cursor: "pointer" }}
-          onClick={handleQuery}
-        />
+        {isLoading ? (
+          <div className="upload-svg">
+            <MoonLoader color="#1E90FF" size={20} speedMultiplier={1} />
+          </div>
+        ) : (
+          <img
+            src={uploadSvg}
+            alt="submit"
+            className="upload-svg"
+            style={{ width: "30px", height: "30px", cursor: "pointer" }}
+            onClick={handleQuery}
+          />
+        )}
       </div>
 
       {history.map((entry, idx) => (

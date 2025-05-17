@@ -200,6 +200,7 @@ ul {
   background-color: #f5f5f5;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
 }
 
 
@@ -350,6 +351,9 @@ ul {
     position: absolute;
     right: 10px;
     top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
